@@ -123,7 +123,7 @@ public class CampaignInformation extends MailChimpObject {
 
 
     @Field
-    public Map<String,String> type_opts;
+    public Map<String,Object> type_opts;
 
 
 }
