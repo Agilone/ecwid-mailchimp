@@ -34,6 +34,18 @@ import java.lang.annotation.Target;
  * @author Vasily Karyaev <v.karyaev@gmail.com>
  */
 public abstract class MailChimpMethod<R> extends MailChimpObject {
+    
+    public @interface Method {
+		/**
+		 * MailChimp API version to be used to execute the annotated method.
+		 */
+		public MailChimpAPIVersion version();
+		
+		/**
+		 * The MailChimp API method name.
+		 */
+		public String name();
+	}
 
 	/**
 	 * This annotation marks subclasses of {@link MailChimpMethod} to specify the corresponding API method names.
