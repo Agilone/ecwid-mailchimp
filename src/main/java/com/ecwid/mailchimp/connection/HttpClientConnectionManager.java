@@ -24,6 +24,8 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HttpContext;
 
@@ -44,11 +46,15 @@ public class HttpClientConnectionManager implements MailChimpConnectionManager {
     private final int BUFFER_SIZE = 4096;
     private final int DELAY_IN_MSECS = 30000;
     private final int MAX_RETRY = 4;
+    private final int CONNECTION_TIMEOUT_IN_SEC = 600;
+    private final int SOCKET_TIMEOUT_IN_SEC = 600;
 
     @Override
     public String post(String url, String payload) throws IOException {
-        HttpPost post = new HttpPost(url);
-        post.setEntity(new StringEntity(payload));
+        HttpPost post = new HttpPost(url);        post.setEntity(new StringEntity(payload));
+        final HttpParams httpParameters = http.getParams();
+        HttpConnectionParams.setConnectionTimeout(httpParameters, CONNECTION_TIMEOUT_IN_SEC * 1000);
+        HttpConnectionParams.setSoTimeout        (httpParameters, SOCKET_TIMEOUT_IN_SEC * 1000);
         return http.execute(post, new BasicResponseHandler());
     }
 
