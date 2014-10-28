@@ -21,9 +21,12 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.PoolingClientConnectionManager;
+import org.apache.http.impl.conn.SchemeRegistryFactory;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.ExecutionContext;
@@ -42,26 +45,34 @@ import java.net.UnknownHostException;
  * @author Ergin Demirel
  */
 public class HttpClientConnectionManager implements MailChimpConnectionManager {
-    private final HttpClient http = new DefaultHttpClient();
+    private final HttpClient http = new DefaultHttpClient(getConnectionManagerClient());
     private final int BUFFER_SIZE = 4096;
     private final int DELAY_IN_MSECS = 30000;
     private final int MAX_RETRY = 4;
-    private final int CONNECTION_TIMEOUT_IN_SEC = 600;
-    private final int SOCKET_TIMEOUT_IN_SEC = 600;
+    private final int CONNECTION_TIMEOUT_IN_SEC = 900;
+    private final int SOCKET_TIMEOUT_IN_SEC = 900;
+
+
+    private ClientConnectionManager getConnectionManagerClient() {
+        PoolingClientConnectionManager poolingClientConnectionManager = new PoolingClientConnectionManager(SchemeRegistryFactory.createDefault());
+        poolingClientConnectionManager.setMaxTotal(100);
+        poolingClientConnectionManager.setDefaultMaxPerRoute(20);
+        return poolingClientConnectionManager;
+    }
 
     @Override
     public String post(String url, String payload) throws IOException {
-        HttpPost post = new HttpPost(url);        post.setEntity(new StringEntity(payload));
+        HttpPost post = new HttpPost(url);
+        post.setEntity(new StringEntity(payload));
         final HttpParams httpParameters = http.getParams();
         HttpConnectionParams.setConnectionTimeout(httpParameters, CONNECTION_TIMEOUT_IN_SEC * 1000);
-        HttpConnectionParams.setSoTimeout        (httpParameters, SOCKET_TIMEOUT_IN_SEC * 1000);
+        HttpConnectionParams.setSoTimeout(httpParameters, SOCKET_TIMEOUT_IN_SEC * 1000);
         return http.execute(post, new BasicResponseHandler());
     }
 
     @Override
     public String getAsFile(String url, String path, String fileName) throws IOException, MailChimpException {
-        if(!new File(path).exists())
-        {
+        if (!new File(path).exists()) {
             throw new IOException("Folder does not exist");
         }
 
