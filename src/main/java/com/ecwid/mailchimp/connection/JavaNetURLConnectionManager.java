@@ -16,6 +16,7 @@
 package com.ecwid.mailchimp.connection;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.HttpURLConnection;
@@ -29,22 +30,50 @@ import java.util.Map;
  * @author James Broberg <jbroberg@gmail.com>
  */
 public class JavaNetURLConnectionManager implements MailChimpConnectionManager  {
+
+	private static final int DEFAULT_TIMEOUT = 15000;
+
 	private HttpURLConnection conn = null;
+
+	private int connectTimeout;
+	private int readTimeout;
+
+	/**
+	 * Constructor.
+	 * Equivalent to calling {@link #JavaNetURLConnectionManager(int, int)} with both parameters set to 15000 (15 seconds).
+	 */
+	public JavaNetURLConnectionManager() {
+		this(DEFAULT_TIMEOUT, DEFAULT_TIMEOUT);
+	}
+
+	/**
+	 * Constructor.
+	 *
+	 * @param connectTimeout the timeout (in milliseconds) when trying to connect to the remote server
+	 * @param readTimeout the timeout (in milliseconds) when when waiting for the response from the remote server
+	 */
+	public  JavaNetURLConnectionManager(int connectTimeout, int readTimeout) {
+		this.connectTimeout = connectTimeout;
+		this.readTimeout = readTimeout;
+	}
 
 	@Override
 	public String post(String url, String payload) throws IOException {
 
-        URL mcUrl = new URL(url);
-        conn = (HttpURLConnection) mcUrl.openConnection();
+		URL mcUrl = new URL(url);
+		conn = (HttpURLConnection) mcUrl.openConnection();
 		conn.setDoOutput(true);
+		conn.setConnectTimeout(connectTimeout);
+		conn.setReadTimeout(readTimeout);
 		conn.setRequestMethod("POST");
 
 		byte bytes[] = payload.getBytes("UTF-8");
 		conn.addRequestProperty("Content-Type", "application/json; charset=utf-8");
 		conn.setRequestProperty("Content-Length", Integer.toString(bytes.length));
 		conn.getOutputStream().write(bytes);
-		
-		Reader reader = new InputStreamReader(conn.getInputStream(), "UTF-8");
+
+		InputStream is = conn.getResponseCode() == 200? conn.getInputStream() : conn.getErrorStream();
+		Reader reader = new InputStreamReader(is, "UTF-8");
 		StringBuilder sb = new StringBuilder();
 		char buf[] = new char[4096];
 		int cnt;
@@ -59,11 +88,26 @@ public class JavaNetURLConnectionManager implements MailChimpConnectionManager  
         throw new UnsupportedOperationException("Method for this connection manager is not available!");
     }
 
-
-    @Override
+	@Override
 	public void close() throws IOException {
 		if (conn != null) {
 			conn.disconnect();
-		}		
+		}
+	}
+
+	public int getConnectTimeout() {
+		return connectTimeout;
+	}
+
+	public void setConnectTimeout(int connectTimeout) {
+		this.connectTimeout = connectTimeout;
+	}
+
+	public int getReadTimeout() {
+		return readTimeout;
+	}
+
+	public void setReadTimeout(int readTimeout) {
+		this.readTimeout = readTimeout;
 	}
 }

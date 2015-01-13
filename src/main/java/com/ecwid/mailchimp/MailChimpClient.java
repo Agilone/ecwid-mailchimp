@@ -73,42 +73,7 @@ public class MailChimpClient implements Closeable {
         }
         return response;
     }
-
-    private String execute(String url, String request) throws IOException {
-        if (log.isLoggable(Level.FINE)) {
-            log.fine("Post to " + url + " : " + request);
-        }
-        String response = connection.post(url, URLEncoder.encode(request, "UTF-8"));
-        if (log.isLoggable(Level.FINE)) {
-            log.fine("Response: " + response);
-        }
-        return response;
-    }
-
-    private JsonElement execute(String url, JsonElement request) throws IOException {
-        return new JsonParser().parse(execute(url, request.toString()));
-    }
-
-    /**
-     * Execute MailChimp API method.
-     *
-     * @param method MailChimp API method to be executed
-     * @return execution result
-     */
-    public <R> R execute(MailChimpMethod<R> method) throws IOException, MailChimpException {
-        final Gson gson = MailChimpGsonFactory.createGson();
-
-        JsonElement result = execute(buildUrl(method), gson.toJsonTree(method));
-        if (result.isJsonObject()) {
-            JsonElement error = result.getAsJsonObject().get("error");
-            if (error != null) {
-                JsonElement code = result.getAsJsonObject().get("code");
-                throw new MailChimpException(code.getAsInt(), error.getAsString());
-            }
-        }
-
-        return gson.fromJson(result, method.getResultType());
-    }
+ 
 
 
     /**
@@ -149,36 +114,92 @@ public class MailChimpClient implements Closeable {
         return result;
     }
 
+	
+	private String execute(String url, String request, MailChimpAPIVersion version) throws IOException {
+		if(log.isLoggable(Level.FINE)) {
+			log.fine("Post to "+url+" : "+request);
+		}
+		
+		if (version.compareTo(MailChimpAPIVersion.v2_0) < 0) {
+			// MailChimp API v1.3 required the post data be urlencoded.
+			request = URLEncoder.encode(request, "UTF-8");
+		}
+		
+		String response = connection.post(url, request);
+		if(log.isLoggable(Level.FINE)) {
+			log.fine("Response: "+response);
+		}
+		
+		return response;
+	}
+	
+	private JsonElement execute(String url, JsonElement request, MailChimpAPIVersion version) throws IOException {
+		return new JsonParser().parse(execute(url, request.toString(), version));
+	}
+	
+	/**
+	 * Execute MailChimp API method.
+	 * 
+	 * @param method MailChimp API method to be executed
+	 * @return execution result
+	 */
+	public <R> R execute(MailChimpMethod<R> method) throws IOException, MailChimpException {
+		final Gson gson = MailChimpGsonFactory.createGson();
 
-    protected String buildUrl(MailChimpMethod<?> method) throws UnsupportedEncodingException {
-        String apikey = method.apikey;
-        if (apikey == null) throw new IllegalArgumentException("apikey is not set");
+		JsonElement result = execute(buildUrl(method), gson.toJsonTree(method), method.getMetaInfo().version());
+		if(result.isJsonObject()) {
+			JsonElement error = result.getAsJsonObject().get("error");		
+			if(error != null) {
+				JsonElement code = result.getAsJsonObject().get("code");
+				throw new MailChimpException(code.getAsInt(), error.getAsString());
+			}
+		}
+		
+		return gson.fromJson(result, method.getResultType());
+	}
+	
+	private String buildUrl(MailChimpMethod<?> method) throws UnsupportedEncodingException {
+		String apikey = method.apikey;
+		if(apikey == null) throw new IllegalArgumentException("apikey is not set");
+		
+		String prefix;
+		int dash = apikey.lastIndexOf('-');
+		if(dash > 0) {
+			prefix = apikey.substring(dash + 1);
+		} else {
+			throw new IllegalArgumentException("Wrong apikey: "+apikey);
+		}
+		
+		MailChimpMethod.Method metaInfo = method.getMetaInfo();
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append("https://");
+		sb.append(prefix);
+		sb.append(".api.mailchimp.com/");
+		sb.append(metaInfo.version()).append("/");
+		if (metaInfo.version().compareTo(MailChimpAPIVersion.v2_0) < 0) {
+			// API version 1.3
+			sb.append("?method=").append(metaInfo.name());
+			sb.append("&output=json");
+		} else {
+			// API version 2.0 or higher
+			sb.append(metaInfo.name());
+			sb.append(".json");
+		}
+		
+		return sb.toString();
+	}
+	
+	/**
+	 * Release resources associated with the connection to MailChimp API service point.
+	 */
+	@Override
+	public void close() {
+		try {
+			connection.close();
+		} catch(IOException e) {
+			log.log(Level.WARNING, "Could not close connection", e);
+		}
+	}
 
-        String prefix;
-        int dash = apikey.lastIndexOf('-');
-        if (dash > 0) {
-            prefix = apikey.substring(dash + 1);
-        } else {
-            throw new IllegalArgumentException("Wrong apikey: " + apikey);
-        }
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("https://");
-        sb.append(prefix);
-        sb.append(".api.mailchimp.com/1.3/?method=");
-        sb.append(URLEncoder.encode(method.getMethodName(), "UTF-8"));
-        return sb.toString();
-    }
-
-    /**
-     * Release resources associated with the connection to MailChimp API service point.
-     */
-    @Override
-    public void close() {
-        try {
-            connection.close();
-        } catch (IOException e) {
-            log.log(Level.WARNING, "Could not close connection", e);
-        }
-    }
 }

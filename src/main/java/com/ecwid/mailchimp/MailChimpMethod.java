@@ -15,11 +15,17 @@
  */
 package com.ecwid.mailchimp;
 
+import com.google.common.reflect.TypeToken;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 
 
 /**
@@ -48,17 +54,24 @@ public abstract class MailChimpMethod<R> extends MailChimpObject {
 	}
 
 	/**
-	 * This annotation marks subclasses of {@link MailChimpMethod} to specify the corresponding API method names.
+	 * This annotation marks subclasses of {@link MailChimpMethod} to specify the corresponding API method meta-info.
 	 */
 	@Documented
 	@Retention(value = RetentionPolicy.RUNTIME)
 	@Target(value = ElementType.TYPE)
-	public @interface Name {
+	public @interface Method {
 		/**
-		 * The name of MailChimp API method.
+		 * MailChimp API version to be used to execute the annotated method.
 		 */
-		public String value();
+		public MailChimpAPIVersion version();
+		
+		/**
+		 * The MailChimp API method name.
+		 */
+		public String name();
 	}
+
+	private final TypeToken<R> resultTypeToken = new TypeToken<R>(getClass()) { };
 
 	/**
 	 * API key to access MailChimp service.
@@ -67,25 +80,31 @@ public abstract class MailChimpMethod<R> extends MailChimpObject {
 	public String apikey;
 	
 	/**
-	 * Get MailChimp API method name.
-	 * See {@link Name} for details.
+	 * Get the MailChimp API method meta-info.
 	 *
 	 * @throws IllegalArgumentException if neither this class nor any of its superclasses
-	 * are annotated with {@link Name}.
+	 * are annotated with {@link Method}.
 	 */
-	public final String getMethodName() {
+	public final Method getMetaInfo() {
 		for(Class<?> c=getClass(); c != null; c=c.getSuperclass()) {
-			Name a = c.getAnnotation(Name.class);
+			Method a = c.getAnnotation(Method.class);
 			if(a != null) {
-				return a.value();
+				return a;
 			}
 		}
-
-		throw new IllegalArgumentException("Neither "+getClass()+" nor its superclasses are annotated with "+Name.class);
+		
+		throw new IllegalArgumentException("Neither "+getClass()+" nor its superclasses are annotated with "+Method.class);
 	}
-
+	
 	/**
-	 * Get the class object representing method result type.
+	 * Get the method result type.
 	 */
-	public abstract Class<R> getResultType();
+	public final Type getResultType() {
+		Type type = resultTypeToken.getType();
+		if (type instanceof Class || type instanceof ParameterizedType || type instanceof GenericArrayType) {
+			return type;
+		} else {
+			throw new IllegalArgumentException("Cannot resolve result type: "+resultTypeToken);
+		}
+	}
 }
