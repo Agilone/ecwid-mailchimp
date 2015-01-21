@@ -13,19 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ecwid.mailchimp.method.campaign;
+package com.ecwid.mailchimp.method.v2_0.campaign;
 
 import com.ecwid.mailchimp.MailChimpObject;
-
-import java.util.List;
 
 /**
  * @author Ergin Demirel
  */
-public class CampaignMembersResult extends MailChimpObject {
-  @Field
-  public Integer total;
+public class Tracking extends MailChimpObject {
+    @Field
+    public Boolean html_clicks;
 
-  @Field
-  public List<CampaignMemberInformation> data;
+    @Field
+    public Boolean text_clicks;
+
+    @Field
+    public Boolean opens;
+
 }

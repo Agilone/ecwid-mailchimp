@@ -13,22 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ecwid.mailchimp.method.campaignreports;
+package com.ecwid.mailchimp.method.v2_0.reports;
 
-import com.ecwid.mailchimp.MailChimpObject;
+import com.ecwid.mailchimp.MailChimpAPIVersion;
+import com.ecwid.mailchimp.MailChimpMethod;
+
+import java.util.List;
 
 /**
+ * See : https://apidocs.mailchimp.com/api/2.0/reports/abuse.php
+ *
  * @author Ergin Demirel
  */
-public class CampaignEmailStatsAIMAllInformation extends MailChimpObject {
+@MailChimpMethod.Method(name = "reports/member-activity", version = MailChimpAPIVersion.v2_0)
+public class MemberActivityReportMethod extends MailChimpMethod<ReportResult> {
+    @Field
+    public String cid = null;
 
     @Field
-    public String action;
-
-    @Field
-    public String timestamp;
-
-    @Field
-    public String url;
-
+    public List<Email> emails;
 }

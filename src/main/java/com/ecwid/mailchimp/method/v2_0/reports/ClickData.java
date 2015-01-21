@@ -13,20 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ecwid.mailchimp.method.campaign;
+package com.ecwid.mailchimp.method.v2_0.reports;
 
 import com.ecwid.mailchimp.MailChimpObject;
-import com.ecwid.mailchimp.method.list.ListInformation;
-
-import java.util.List;
 
 /**
- * @author Matt Farmer <matt@frmr.me>
+ * @author Ergin Demirel
  */
-public class CampaignResult extends MailChimpObject {
-  @Field
-  public Integer total;
+public class ClickData extends MailChimpObject {
 
-  @Field
-  public List<CampaignInformation> data;
+    @Field
+    public String url;
+
+    @Field
+    public Integer clicks;
+
+    @Field
+    public Double clicks_percent;
+
+    @Field
+    public Integer unique;
+
+    @Field
+    public Double unique_percent;
+
+    @Field
+    public Integer tid;
+
 }

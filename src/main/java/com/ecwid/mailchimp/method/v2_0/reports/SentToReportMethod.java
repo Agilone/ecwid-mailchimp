@@ -13,22 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ecwid.mailchimp.method.campaignreports;
+package com.ecwid.mailchimp.method.v2_0.reports;
 
-import com.ecwid.mailchimp.MailChimpObject;
-import com.ecwid.mailchimp.method.campaign.CampaignInformation;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.ecwid.mailchimp.MailChimpAPIVersion;
+import com.ecwid.mailchimp.MailChimpMethod;
 
 /**
+ * See : https://apidocs.mailchimp.com/api/2.0/reports/sent-to.php
+ *
  * @author Ergin Demirel
  */
-public class CampaignEmailStatsAIMAllResult extends MailChimpObject {
-  @Field
-  public Integer total;
+@MailChimpMethod.Method(name = "reports/sent-to", version = MailChimpAPIVersion.v2_0)
+public class SentToReportMethod extends MailChimpMethod<ReportResult> {
+    @Field
+    public String cid = null;
 
-  @Field
-  public Map<String,List<CampaignEmailStatsAIMAllInformation>> data;
+    @Field
+    public Opts opts;
 }

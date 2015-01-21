@@ -13,27 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- package com.ecwid.mailchimp.method.campaignreports;
+package com.ecwid.mailchimp.method.v2_0.campaign;
 
- import com.ecwid.mailchimp.MailChimpMethod;
+import com.ecwid.mailchimp.MailChimpObject;
+
+import java.util.List;
 
 /**
- *
  * @author Ergin Demirel
  */
-@MailChimpMethod.Name("campaignUnsubscribes")
-public class CampaignUnsubscribesMethod extends MailChimpMethod<CampaignReportResult> {
-  @Field
-  public String cid = null;
+public class CampaignResult extends MailChimpObject {
+    @Field
+    public Integer total;
 
-  @Field
-  public Integer start = null;
+    @Field
+    public List<CampaignInformation> data;
 
-  @Field
-  public Integer limit = null;
+    @Field
+    public List<Error> error;
 
-  @Override
-  public Class<CampaignReportResult> getResultType() {
-    return CampaignReportResult.class;
-  }
+    public static class Error extends MailChimpObject {
+
+        @Field
+        public String filter;
+
+        @Field
+        public String value;
+
+        @Field
+        public Integer code;
+
+        @Field
+        public String error;
+    }
 }

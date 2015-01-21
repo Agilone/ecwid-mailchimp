@@ -17,15 +17,10 @@ package com.ecwid.mailchimp;
 
 import com.google.common.reflect.TypeToken;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
 
 
 /**
@@ -36,75 +31,63 @@ import java.lang.reflect.TypeVariable;
  * you can easily create the wrapper by extending this class.
  *
  * @param R type of the method call result
- * 
+ *
  * @author Vasily Karyaev <v.karyaev@gmail.com>
  */
 public abstract class MailChimpMethod<R> extends MailChimpObject {
-    
+
+    /**
+     * This annotation marks subclasses of {@link MailChimpMethod} to specify the corresponding API method meta-info.
+     */
+    @Documented
+    @Retention(value = RetentionPolicy.RUNTIME)
+    @Target(value = ElementType.TYPE)
     public @interface Method {
-		/**
-		 * MailChimp API version to be used to execute the annotated method.
-		 */
-		public MailChimpAPIVersion version();
-		
-		/**
-		 * The MailChimp API method name.
-		 */
-		public String name();
-	}
+        /**
+         * MailChimp API version to be used to execute the annotated method.
+         */
+        public MailChimpAPIVersion version();
 
-	/**
-	 * This annotation marks subclasses of {@link MailChimpMethod} to specify the corresponding API method meta-info.
-	 */
-	@Documented
-	@Retention(value = RetentionPolicy.RUNTIME)
-	@Target(value = ElementType.TYPE)
-	public @interface Method {
-		/**
-		 * MailChimp API version to be used to execute the annotated method.
-		 */
-		public MailChimpAPIVersion version();
-		
-		/**
-		 * The MailChimp API method name.
-		 */
-		public String name();
-	}
+        /**
+         * The MailChimp API method name.
+         */
+        public String name();
+    }
 
-	private final TypeToken<R> resultTypeToken = new TypeToken<R>(getClass()) { };
+    private final TypeToken<R> resultTypeToken = new TypeToken<R>(getClass()) { };
 
-	/**
-	 * API key to access MailChimp service.
-	 */
-	@Field
-	public String apikey;
-	
-	/**
-	 * Get the MailChimp API method meta-info.
-	 *
-	 * @throws IllegalArgumentException if neither this class nor any of its superclasses
-	 * are annotated with {@link Method}.
-	 */
-	public final Method getMetaInfo() {
-		for(Class<?> c=getClass(); c != null; c=c.getSuperclass()) {
-			Method a = c.getAnnotation(Method.class);
-			if(a != null) {
-				return a;
-			}
-		}
-		
-		throw new IllegalArgumentException("Neither "+getClass()+" nor its superclasses are annotated with "+Method.class);
-	}
-	
-	/**
-	 * Get the method result type.
-	 */
-	public final Type getResultType() {
-		Type type = resultTypeToken.getType();
-		if (type instanceof Class || type instanceof ParameterizedType || type instanceof GenericArrayType) {
-			return type;
-		} else {
-			throw new IllegalArgumentException("Cannot resolve result type: "+resultTypeToken);
-		}
-	}
+    /**
+     * API key to access MailChimp service.
+     */
+    @Field
+    public String apikey;
+
+    /**
+     * Get the MailChimp API method meta-info.
+     *
+     * @throws IllegalArgumentException if neither this class nor any of its superclasses
+     * are annotated with {@link Method}.
+     */
+    public final Method getMetaInfo() {
+        for(Class<?> c=getClass(); c != null; c=c.getSuperclass()) {
+            Method a = c.getAnnotation(Method.class);
+            if(a != null) {
+                return a;
+            }
+        }
+
+        throw new IllegalArgumentException("Neither "+getClass()+" nor its superclasses are annotated with "+Method.class);
+    }
+
+    /**
+     * Get the method result type.
+     */
+    public final Type getResultType() {
+        Type type = resultTypeToken.getType();
+        if (type instanceof Class || type instanceof ParameterizedType || type instanceof GenericArrayType) {
+            return type;
+        } else {
+            throw new IllegalArgumentException("Cannot resolve result type: "+resultTypeToken);
+        }
+    }
 }

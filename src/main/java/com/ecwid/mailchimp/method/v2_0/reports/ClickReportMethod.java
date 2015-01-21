@@ -13,33 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ecwid.mailchimp.method.campaign;
+package com.ecwid.mailchimp.method.v2_0.reports;
 
+import com.ecwid.mailchimp.MailChimpAPIVersion;
 import com.ecwid.mailchimp.MailChimpMethod;
 
 /**
- * http://apidocs.mailchimp.com/api/1.3/campaignmembers.func.php
- *
  * @author Ergin Demirel
  */
-@MailChimpMethod.Name("campaignMembers")
-public class CampaignMembersMethod extends MailChimpMethod<CampaignMembersResult> {
-
+@MailChimpMethod.Method(name = "reports/clicks", version = MailChimpAPIVersion.v2_0)
+public class ClickReportMethod extends MailChimpMethod<ClickResult> {
     @Field
     public String cid = null;
-
-    @Field
-    public String status = null;
-
-    @Field
-    public Integer start = null;
-
-    @Field
-    public Integer limit = null;
-
-
-    @Override
-    public Class<CampaignMembersResult> getResultType() {
-        return CampaignMembersResult.class;
-    }
 }

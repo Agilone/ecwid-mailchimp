@@ -13,24 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ecwid.mailchimp.method.campaign;
+package com.ecwid.mailchimp.method.v2_0.reports;
 
+import com.ecwid.mailchimp.MailChimpAPIVersion;
+import com.ecwid.mailchimp.MailChimpMethod;
 import com.ecwid.mailchimp.MailChimpObject;
 
-import java.util.List;
-
 /**
+ * See : https://apidocs.mailchimp.com/api/2.0/reports/abuse.php
+ *
  * @author Ergin Demirel
  */
-public class SegmentConditions extends MailChimpObject {
-
+@MailChimpMethod.Method(name = "reports/abuse", version = MailChimpAPIVersion.v2_0)
+public class AbuseReportMethod extends MailChimpMethod<ReportResult> {
     @Field
-    public String field;
+    public String cid = null;
 
-    @Field
-    public String op;
-
-    @Field
-    public String value;
-
+    @MailChimpObject.Field
+    public Opts opts;
 }

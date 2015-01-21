@@ -13,31 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ecwid.mailchimp.method.campaignreports;
+package com.ecwid.mailchimp.method.v2_0.campaign;
 
-import com.ecwid.mailchimp.MailChimpMethod;
-
-import java.util.Date;
+import com.ecwid.mailchimp.MailChimpObject;
 
 /**
  * @author Ergin Demirel
  */
-@MailChimpMethod.Name("campaignBounceMessages")
-public class CampaignBounceMessagesMethod extends MailChimpMethod<CampaignReportResult> {
-    @Field
-    public String cid = null;
+public class SegmentConditions extends MailChimpObject {
 
     @Field
-    public Integer start = null;
+    public String field;
 
     @Field
-    public Integer limit = null;
+    public String op;
 
     @Field
-    public Date since = null;
+    public String value;
 
-    @Override
-    public Class<CampaignReportResult> getResultType() {
-        return CampaignReportResult.class;
-    }
 }

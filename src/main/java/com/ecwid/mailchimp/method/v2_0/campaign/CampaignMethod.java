@@ -13,30 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ecwid.mailchimp.method.campaignreports;
+package com.ecwid.mailchimp.method.v2_0.campaign;
 
-import com.ecwid.mailchimp.MailChimpObject;
+import com.ecwid.mailchimp.MailChimpAPIVersion;
+import com.ecwid.mailchimp.MailChimpMethod;
 
 /**
- * @author Ergin Demirel
+ * See https://apidocs.mailchimp.com/api/2.0/campaigns/list.php
+ *
+ * @author Ergin demirel
  */
-public class CampaignStatsInformation extends MailChimpObject {
+@MailChimpMethod.Method(name = "campaigns/list", version = MailChimpAPIVersion.v2_0)
+public class CampaignMethod extends MailChimpMethod<CampaignResult> {
+    @Field
+    public CampaignMethodFilters filters = null;
 
     @Field
-    public String email;
+    public Integer start = null;
 
     @Field
-    public String date;
+    public Integer limit = null;
 
     @Field
-    public String type;
+    public String sort_field = null;
 
     @Field
-    public String message;
+    public String sort_dir = null;
 
-    @Field
-    public String reason;
-
-    @Field
-    public String reason_text;
 }

@@ -16,29 +16,25 @@
 package com.ecwid.mailchimp.connection;
 
 import com.ecwid.mailchimp.MailChimpException;
-import java.io.IOException;
-import org.apache.http.HttpResponse;
+import org.apache.http.*;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.impl.conn.SchemeRegistryFactory;
 import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.EntityUtils;
 
 import javax.net.ssl.SSLException;
 import java.io.*;
 import java.net.ConnectException;
 import java.net.UnknownHostException;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.util.EntityUtils;
 
 
 /**
@@ -49,13 +45,12 @@ import org.apache.http.util.EntityUtils;
  * @author Ergin Demirel
  */
 public class HttpClientConnectionManager implements MailChimpConnectionManager {
-    private final HttpClient http = new DefaultHttpClient(getConnectionManagerClient());
+    private static final int DEFAULT_TIMEOUT = 15000;
     private final int BUFFER_SIZE = 4096;
     private final int DELAY_IN_MSECS = 30000;
     private final int MAX_RETRY = 4;
-    private final int CONNECTION_TIMEOUT_IN_SEC = 900;
-    private final int SOCKET_TIMEOUT_IN_SEC = 900;
 
+    private final HttpClient http = new DefaultHttpClient(getConnectionManagerClient());
 
     private ClientConnectionManager getConnectionManagerClient() {
         PoolingClientConnectionManager poolingClientConnectionManager = new PoolingClientConnectionManager(SchemeRegistryFactory.createDefault());
@@ -64,14 +59,35 @@ public class HttpClientConnectionManager implements MailChimpConnectionManager {
         return poolingClientConnectionManager;
     }
 
+    /**
+     * Constructor.
+     * Equivalent to calling {@link #HttpClientConnectionManager(int, int)} with both parameters set to 15000 (15 seconds).
+     */
+    public HttpClientConnectionManager() {
+        this(DEFAULT_TIMEOUT * 60, DEFAULT_TIMEOUT * 60);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param connectTimeout the timeout (in milliseconds) when trying to connect to the remote server
+     * @param readTimeout    the timeout (in milliseconds) when when waiting for the response from the remote server
+     */
+    public HttpClientConnectionManager(int connectTimeout, int readTimeout) {
+        setConnectTimeout(connectTimeout);
+        setReadTimeout(readTimeout);
+    }
+
     @Override
     public String post(String url, String payload) throws IOException {
         HttpPost post = new HttpPost(url);
-        post.setEntity(new StringEntity(payload));
-        final HttpParams httpParameters = http.getParams();
-        HttpConnectionParams.setConnectionTimeout(httpParameters, CONNECTION_TIMEOUT_IN_SEC * 1000);
-        HttpConnectionParams.setSoTimeout(httpParameters, SOCKET_TIMEOUT_IN_SEC * 1000);
-        return http.execute(post, new BasicResponseHandler());
+        post.setEntity(new StringEntity(payload, "UTF-8"));
+        HttpResponse response = http.execute(post);
+        if (response.getEntity() != null) {
+            return EntityUtils.toString(response.getEntity(), "UTF-8").trim();
+        } else {
+            throw new IOException(response.getStatusLine().toString());
+        }
     }
 
     @Override
@@ -163,59 +179,21 @@ public class HttpClientConnectionManager implements MailChimpConnectionManager {
         http.getConnectionManager().shutdown();
     }
 
-	private static final int DEFAULT_TIMEOUT = 15000;
+    public int getConnectTimeout() {
+        return HttpConnectionParams.getConnectionTimeout(http.getParams());
+    }
 
-	private final HttpClient http = new DefaultHttpClient();
+    public void setConnectTimeout(int connectTimeout) {
+        HttpConnectionParams.setConnectionTimeout(http.getParams(), connectTimeout);
+    }
 
-	/**
-	 * Constructor.
-	 * Equivalent to calling {@link #HttpClientConnectionManager(int, int)} with both parameters set to 15000 (15 seconds).
-	 */
-	public HttpClientConnectionManager() {
-		this(DEFAULT_TIMEOUT, DEFAULT_TIMEOUT);
-	}
+    public int getReadTimeout() {
+        return HttpConnectionParams.getSoTimeout(http.getParams());
+    }
 
-	/**
-	 * Constructor.
-	 *
-	 * @param connectTimeout the timeout (in milliseconds) when trying to connect to the remote server
-	 * @param readTimeout the timeout (in milliseconds) when when waiting for the response from the remote server
-	 */
-	public HttpClientConnectionManager(int connectTimeout, int readTimeout) {
-		setConnectTimeout(connectTimeout);
-		setReadTimeout(readTimeout);
-	}
+    public void setReadTimeout(int readTimeout) {
+        HttpConnectionParams.setSoTimeout(http.getParams(), readTimeout);
+    }
 
-	@Override
-	public String post(String url, String payload) throws IOException {
-		HttpPost post = new HttpPost(url);
-		post.setEntity(new StringEntity(payload, "UTF-8"));
-		HttpResponse response = http.execute(post);
-		if (response.getEntity() != null) {
-			return EntityUtils.toString(response.getEntity(), "UTF-8").trim();
-		} else {
-			throw new IOException(response.getStatusLine().toString());
-		}
-	}
 
-	@Override
-	public void close() {
-		http.getConnectionManager().shutdown();
-	}
-
-	public int getConnectTimeout() {
-		return HttpConnectionParams.getConnectionTimeout(http.getParams());
-	}
-
-	public void setConnectTimeout(int connectTimeout) {
-		HttpConnectionParams.setConnectionTimeout(http.getParams(), connectTimeout);
-	}
-
-	public int getReadTimeout() {
-		return HttpConnectionParams.getSoTimeout(http.getParams());
-	}
-
-	public void setReadTimeout(int readTimeout) {
-		HttpConnectionParams.setSoTimeout(http.getParams(), readTimeout);
-	}
 }

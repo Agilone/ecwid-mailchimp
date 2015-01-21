@@ -13,20 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ecwid.mailchimp.method.campaignreports;
+package com.ecwid.mailchimp.method.v2_0.reports;
 
 import com.ecwid.mailchimp.MailChimpObject;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Ergin Demirel
  */
-public class CampaignReportResult extends MailChimpObject {
+public class ReportResult extends MailChimpObject {
   @Field
   public Integer total;
 
   @Field
-  public List<CampaignStatsInformation> data;
+  public List<ReportData> data;
 }
