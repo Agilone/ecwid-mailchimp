@@ -25,7 +25,7 @@ import com.ecwid.mailchimp.MailChimpObject;
  * @author Ergin Demirel
  */
 @MailChimpMethod.Method(name = "/reports/bounce-messages", version = MailChimpAPIVersion.v2_0)
-public class BounceMessagesMethod extends MailChimpMethod<ReportResult> {
+public class BounceMessagesReportMethod extends MailChimpMethod<ReportResult> {
     @Field
     public String cid = null;
 
