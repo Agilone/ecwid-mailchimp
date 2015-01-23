@@ -20,6 +20,8 @@ import com.ecwid.mailchimp.MailChimpMethod;
 import com.ecwid.mailchimp.MailChimpObject;
 
 /**
+ * See : https://apidocs.mailchimp.com/api/2.0/reports/unsubscribes.php
+ *
  * @author Ergin Demirel
  */
 @MailChimpMethod.Method(name = "reports/unsubscribes", version = MailChimpAPIVersion.v2_0)

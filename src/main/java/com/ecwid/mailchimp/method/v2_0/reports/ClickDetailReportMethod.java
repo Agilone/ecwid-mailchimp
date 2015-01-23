@@ -19,6 +19,8 @@ import com.ecwid.mailchimp.MailChimpAPIVersion;
 import com.ecwid.mailchimp.MailChimpMethod;
 
 /**
+ * See : https://apidocs.mailchimp.com/api/2.0/reports/click-detail.php
+ *
  * @author Ergin Demirel
  */
 @MailChimpMethod.Method(name = "reports/click-detail", version = MailChimpAPIVersion.v2_0)

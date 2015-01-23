@@ -11,19 +11,4 @@ public class MemberActivityData extends MailChimpObject {
 
     @Field
     public List<Activity> activity;
-
-
-    public static class Activity extends MailChimpObject {
-        @Field
-        public String action;
-
-        @Field
-        public String timestamp;
-
-        @Field
-        public String url;
-
-        @Field
-        public String ip;
-    }
 }
