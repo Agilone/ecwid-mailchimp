@@ -13,27 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- package com.ecwid.mailchimp.method.campaignreports;
+package com.ecwid.mailchimp.method.v2_0.reports;
 
- import com.ecwid.mailchimp.MailChimpMethod;
+import com.ecwid.mailchimp.MailChimpAPIVersion;
+import com.ecwid.mailchimp.MailChimpMethod;
+import com.ecwid.mailchimp.MailChimpObject;
 
 /**
+ * See : https://apidocs.mailchimp.com/api/2.0/reports/unsubscribes.php
  *
  * @author Ergin Demirel
  */
-@MailChimpMethod.Name("campaignEmailStatsAIMAll")
-public class CampaignEmailStatsAIMAllMethod extends MailChimpMethod<CampaignEmailStatsAIMAllResult> {
-  @Field
-  public String cid = null;
+@MailChimpMethod.Method(name = "reports/unsubscribes", version = MailChimpAPIVersion.v2_0)
+public class UnsubscribeReportMethod extends MailChimpMethod<ReportResult> {
+    @Field
+    public String cid = null;
 
-  @Field
-  public Integer start = null;
+    @MailChimpObject.Field
+    public Opts opts;
 
-  @Field
-  public Integer limit = null;
-
-  @Override
-  public Class<CampaignEmailStatsAIMAllResult> getResultType() {
-    return CampaignEmailStatsAIMAllResult.class;
-  }
 }

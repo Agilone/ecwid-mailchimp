@@ -13,26 +13,58 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ecwid.mailchimp.method.campaign;
+package com.ecwid.mailchimp.method.v2_0.campaign;
 
 import com.ecwid.mailchimp.MailChimpObject;
 
-import java.util.Map;
-
 /**
- * @author Ergin Demirel
+ * @author Erhin Demirel
  */
-public class CampaignMemberInformation extends MailChimpObject {
+public class CampaignMethodFilters extends MailChimpObject {
+    @Field
+    public String campaign_id;
 
     @Field
-    public String email;
+    public String parent_id;
+
+    @Field
+    public String list_id;
+
+    @Field
+    public Integer folder_id;
+
+    @Field
+    public Integer template_id;
 
     @Field
     public String status;
 
     @Field
-    public String absplit_group;
+    public String type;
 
     @Field
-    public String tz_group;
+    public String from_name;
+
+    @Field
+    public String from_email;
+
+    @Field
+    public String title;
+
+    @Field
+    public String subject;
+
+    @Field
+    public String sendtime_start;
+
+    @Field
+    public String sendtime_end;
+
+    @Field
+    public Boolean uses_segment;
+
+    @Field
+    public Boolean exact;
+
+
 }

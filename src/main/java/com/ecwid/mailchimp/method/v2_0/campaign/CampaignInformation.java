@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ecwid.mailchimp.method.campaign;
+package com.ecwid.mailchimp.method.v2_0.campaign;
 
 import com.ecwid.mailchimp.MailChimpObject;
 
@@ -108,9 +108,18 @@ public class CampaignInformation extends MailChimpObject {
     @Field
     public String parent_id;
 
+    @Field
+    public Boolean is_child;
+
+    @Field
+    public String tests_sent;
+
+    @Field
+    public Integer tests_remain;
 
     @Field
     public Tracking tracking;
+
 
 
     @Field

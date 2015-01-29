@@ -13,21 +13,47 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ecwid.mailchimp.method.campaign;
+package com.ecwid.mailchimp.method.v2_0.reports;
 
 import com.ecwid.mailchimp.MailChimpObject;
+import com.ecwid.mailchimp.method.v2_0.lists.MemberInfoData;
 
 /**
  * @author Ergin Demirel
  */
-public class Tracking extends MailChimpObject {
-    @Field
-    public Boolean html_clicks;
+public class ReportData extends MailChimpObject {
 
     @Field
-    public Boolean text_clicks;
+    public MemberInfoData member;
 
     @Field
-    public Boolean opens;
+    public String date;
+
+    @Field
+    public String type;
+
+    @Field
+    public String absplit_group;
+
+    @Field
+    public String tz_group;
+
+    @Field
+    public String message;
+
+    @Field
+    public String reason;
+
+    @Field
+    public String reason_text;
+
+    @Field
+    public Integer opens;
+
+    @Field
+    public Integer clicks;
+
+    @Field
+    public String status;
 
 }

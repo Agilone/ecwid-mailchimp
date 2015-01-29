@@ -13,22 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ecwid.mailchimp.method.campaignreports;
+package com.ecwid.mailchimp.method.v2_0.reports;
 
-import com.ecwid.mailchimp.MailChimpObject;
+import com.ecwid.mailchimp.MailChimpAPIVersion;
+import com.ecwid.mailchimp.MailChimpMethod;
 
 /**
+ * See : https://apidocs.mailchimp.com/api/2.0/reports/click-detail.php
+ *
  * @author Ergin Demirel
  */
-public class CampaignEmailStatsAIMAllInformation extends MailChimpObject {
+@MailChimpMethod.Method(name = "reports/click-detail", version = MailChimpAPIVersion.v2_0)
+public class ClickDetailReportMethod extends MailChimpMethod<ReportResult> {
+    @Field
+    public String cid = null;
 
     @Field
-    public String action;
+    public Integer tid = null;
 
     @Field
-    public String timestamp;
-
-    @Field
-    public String url;
+    public Opts opts;
 
 }

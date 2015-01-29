@@ -13,33 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ecwid.mailchimp.method.campaign;
+package com.ecwid.mailchimp.method.v2_0.reports;
 
-import com.ecwid.mailchimp.MailChimpMethod;
+import com.ecwid.mailchimp.MailChimpObject;
+
+import java.util.List;
 
 /**
- * http://apidocs.mailchimp.com/api/1.3/campaignmembers.func.php
- *
  * @author Ergin Demirel
  */
-@MailChimpMethod.Name("campaignMembers")
-public class CampaignMembersMethod extends MailChimpMethod<CampaignMembersResult> {
+public class ClickResult extends MailChimpObject {
 
     @Field
-    public String cid = null;
+    public List<ClickData> total;
 
     @Field
-    public String status = null;
+    public List<ClickData> a;
 
     @Field
-    public Integer start = null;
+    public List<ClickData> b;
 
-    @Field
-    public Integer limit = null;
-
-
-    @Override
-    public Class<CampaignMembersResult> getResultType() {
-        return CampaignMembersResult.class;
-    }
 }

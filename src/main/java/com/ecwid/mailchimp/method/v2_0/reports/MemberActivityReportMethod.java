@@ -13,31 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ecwid.mailchimp.method.campaignreports;
+package com.ecwid.mailchimp.method.v2_0.reports;
 
+import com.ecwid.mailchimp.MailChimpAPIVersion;
 import com.ecwid.mailchimp.MailChimpMethod;
 
-import java.util.Date;
+import java.util.List;
 
 /**
+ * See : https://apidocs.mailchimp.com/api/2.0/reports/member-activity.php
+ *
  * @author Ergin Demirel
  */
-@MailChimpMethod.Name("campaignBounceMessages")
-public class CampaignBounceMessagesMethod extends MailChimpMethod<CampaignReportResult> {
+@MailChimpMethod.Method(name = "reports/member-activity", version = MailChimpAPIVersion.v2_0)
+public class MemberActivityReportMethod extends MailChimpMethod<MemberActivityResult> {
     @Field
     public String cid = null;
 
     @Field
-    public Integer start = null;
-
-    @Field
-    public Integer limit = null;
-
-    @Field
-    public Date since = null;
-
-    @Override
-    public Class<CampaignReportResult> getResultType() {
-        return CampaignReportResult.class;
-    }
+    public List<Email> emails;
 }
